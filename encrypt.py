@@ -3,50 +3,61 @@ import random
 def encrypt(data, key):
     dataPrep = []
     for i in data:
-        dataPrep.append(ord(i))
+        dataPrep.append(i)
 
     enc = []
     for i in range(len(dataPrep)):
-        enc.append(chr(dataPrep[i] ^ key[i]))
+        enc.append(dataPrep[i] ^ key[i % 1023])
 
-    return ''.join(enc)
+    return bytes(enc)
     
 def generateKey(data):
     keyPrompt = input("Generate new key?(y/n):\n")
     key = []
+
+    while keyPrompt not in ('y', 'n'):
+        print('Invalid input.')
+        keyPrompt = input("Generate new key?(y/n):\n")
+    
     if keyPrompt == 'y':
-        for i in range(len(data)):
-            key.append(random.randint(1, 126))
-        keyStr = ''.join(map(chr, key))
-        k = open('key.txt', 'w')
+        for i in range(1024):
+            key.append(random.randint(1, 255))
+        keyStr = bytes(key)
+        k = open('key.txt', 'wb')
         k.write(keyStr)
         k.close()
     elif keyPrompt == 'n':
-        keyFile = input("Enter the filename of the key file (include '.txt')\n")
-        k = open(keyFile, 'r')
-        key = k.read()
-        k.close()
-        key = list(key)
-        key = list(map(ord, key))
+        while True:
+            try:
+                keyFile = input("Enter the filename of the key file (include file type)\n")
+                k = open(keyFile, 'rb')
+                key = k.read()
+                k.close()
+            except FileNotFoundError:
+                print("That file does not exist.")
+                pass
+            else:
+                break
+        
     return key
 
-textFile = input("What file would you like to encrypt/decrypt (include '.txt')\n")
-d = open(textFile, 'r')
-data = d.read()
-d.close()
-
+while True:
+    try:
+        textFile = input("What file would you like to encrypt/decrypt (include file type)\n")
+        d = open(textFile, 'rb')
+        data = d.read()
+        d.close()
+    except FileNotFoundError:
+        print("That file does not exist.")
+        pass
+    else:
+        break
+    
 key = generateKey(data)
 
-dataPrompt = input("Are you encrypting or decrypting this file? ('e' for encrypt, 'd' for decrypt)\n")
-if dataPrompt == 'e':
-    enc = encrypt(data, key)
-    encryptName = input("What filename would you like to store the encrypted data in? (include '.txt')\n")
-    e = open(encryptName, 'w')
-    e.write(str(enc))
-    e.close()
-elif dataPrompt == 'd':
-    enc = encrypt(data, key)
-    encryptName = input("What filename would you like to store the decrypted data in? (include '.txt')\n")
-    e = open(encryptName, 'w')
-    e.write(str(enc))
-    e.close()
+enc = encrypt(data, key)
+encryptName = input("What filename would you like to store the encrypted/decrypted data in? (include file type')\n")
+encryptList = encryptName.split('.')
+e = open(encryptName, 'wb')
+e.write(enc)
+e.close()
