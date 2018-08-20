@@ -1,2 +1,2 @@
 # PythonTextOTPCypher
-Uses a one-time pad to cypher a text file
+This started as a program that would encrypt the contents of text files, however it has been updated to encrypt any file type. This program generates a 1kb key or accepts a user specified key file (non text files such as images and video can also be used as keys) to encrypt the file the user wants to encrypt. Since it encrypts with a XOR operation, the same function decrypts and encrypts the file as long as the key remains the same.
