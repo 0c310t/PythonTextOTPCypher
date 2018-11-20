@@ -11,7 +11,7 @@ def encrypt(data, key):
 
     return bytes(enc)
     
-def generateKey(data):
+def generateKey():
     keyPrompt = input("Generate new key?(y/n):\n")
     key = []
 
@@ -53,11 +53,10 @@ while True:
     else:
         break
     
-key = generateKey(data)
+key = generateKey()
 
 enc = encrypt(data, key)
 encryptName = input("What filename would you like to store the encrypted/decrypted data in? (include file type')\n")
-encryptList = encryptName.split('.')
 e = open(encryptName, 'wb')
 e.write(enc)
 e.close()
